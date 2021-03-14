@@ -1167,6 +1167,13 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-side-effect@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@types/react-side-effect/-/react-side-effect-1.1.1.tgz#c38ab896c609aa242dae2adf9cd7a53457e9c324"
+  integrity sha512-XTdMsVMO2BBHVRbe7aHfEW8kxzLBbTRZtEimxSxWmF9cmvCfFXEZvexW4QczjFItgTWkfeHTxQ/X8qN0xyCwWQ==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react@*", "@types/react@^16.9.34":
   version "16.9.34"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-16.9.34.tgz#f7d5e331c468f53affed17a8a4d488cd44ea9349"

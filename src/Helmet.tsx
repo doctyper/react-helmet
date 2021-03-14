@@ -5,6 +5,8 @@ import isEqual from "react-fast-compare";
 import {
   convertReactPropstoHtmlAttributes,
   handleClientStateChange,
+  HelmetData,
+  HelmetProps,
   mapStateOnServer,
   reducePropsToState,
   warn,
@@ -27,8 +29,8 @@ declare global {
   }
 }
 
-const Helmet = (Component: $FIXME) =>
-  class HelmetWrapper extends React.Component {
+const Helmet = (Component: React.PropsWithChildren<any>) =>
+  class HelmetWrapper extends React.Component<HelmetProps> {
     /**
      * @param {Object} base: {"target": "_blank", "href": "http://mysite.com/"}
      * @param {Object} bodyAttributes: {"className": "root"}
@@ -68,9 +70,9 @@ const Helmet = (Component: $FIXME) =>
       titleTemplate: PropTypes.string,
     };
 
-    static defaultProps = {
+    static defaultProps: HelmetProps = {
       defer: true,
-      encodeSpecialCharacters: true,
+      encode: true,
     };
 
     // Component.peek comes from react-side-effect:
@@ -80,13 +82,13 @@ const Helmet = (Component: $FIXME) =>
     static peek = Component.peek;
 
     static rewind = () => {
-      let mappedState = Component.rewind();
+      let mappedState: Partial<HelmetData> = Component.rewind();
       if (!mappedState) {
         // provide fallback if mappedState is undefined
         mappedState = mapStateOnServer({
           baseTag: [],
           bodyAttributes: {},
-          encodeSpecialCharacters: true,
+          encode: true,
           htmlAttributes: {},
           linkTags: [],
           metaTags: [],
@@ -101,15 +103,18 @@ const Helmet = (Component: $FIXME) =>
       return mappedState;
     };
 
-    static set canUseDOM(canUseDOM: $FIXME) {
+    static set canUseDOM(canUseDOM: boolean) {
       Component.canUseDOM = canUseDOM;
     }
 
-    shouldComponentUpdate(nextProps: $FIXME) {
+    shouldComponentUpdate(nextProps: HelmetProps) {
       return !isEqual(this.props, nextProps);
     }
 
-    mapNestedChildrenToProps(child: $FIXME, nestedChildren: $FIXME) {
+    mapNestedChildrenToProps(
+      child: React.ReactElement,
+      nestedChildren: string
+    ) {
       if (!nestedChildren) {
         return null;
       }
@@ -137,7 +142,7 @@ const Helmet = (Component: $FIXME) =>
       arrayTypeChildren,
       newChildProps,
       nestedChildren,
-    }: $FIXME) {
+    }) {
       return {
         ...arrayTypeChildren,
         [child.type]: [
@@ -150,12 +155,7 @@ const Helmet = (Component: $FIXME) =>
       };
     }
 
-    mapObjectTypeChildren({
-      child,
-      newProps,
-      newChildProps,
-      nestedChildren,
-    }: $FIXME) {
+    mapObjectTypeChildren({ child, newProps, newChildProps, nestedChildren }) {
       switch (child.type) {
         case TAG_NAMES.TITLE:
           return {
@@ -183,7 +183,10 @@ const Helmet = (Component: $FIXME) =>
       };
     }
 
-    mapArrayTypeChildrenToProps(arrayTypeChildren: $FIXME, newProps: $FIXME) {
+    mapArrayTypeChildrenToProps(
+      arrayTypeChildren: $FIXME,
+      newProps: HelmetProps
+    ) {
       let newFlattenedProps = { ...newProps };
 
       Object.keys(arrayTypeChildren).forEach((arrayChildName) => {
@@ -196,9 +199,9 @@ const Helmet = (Component: $FIXME) =>
       return newFlattenedProps;
     }
 
-    warnOnInvalidChildren(child: $FIXME, nestedChildren: $FIXME) {
+    warnOnInvalidChildren(child: React.ReactElement, nestedChildren: $FIXME) {
       if (process.env.NODE_ENV !== "production") {
-        if (!VALID_TAG_NAMES.some((name: $FIXME) => child.type === name)) {
+        if (!VALID_TAG_NAMES.some((name) => child.type === name)) {
           if (typeof child.type === "function") {
             return warn(
               `You may be attempting to nest <Helmet> components within each other, which is not allowed. Refer to our API for more information.`
@@ -231,7 +234,7 @@ const Helmet = (Component: $FIXME) =>
       return true;
     }
 
-    mapChildrenToProps(children: $FIXME, newProps: $FIXME) {
+    mapChildrenToProps(children: any, newProps: HelmetProps) {
       let arrayTypeChildren = {};
 
       React.Children.forEach(children, (child) => {
